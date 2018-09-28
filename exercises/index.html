@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+// your code here
+
+function validateCreditCard(creditCardNumber) {
+    let creditCardNumbers = [];
+
+    for (let index = 0; index < creditCardNumber.length; index++) {
+        let char = creditCardNumber.charAt(index);
+        if (index == 4 || index == 9 || index == 14) {
+            // Check if it is a dash
+            if (char != '-') {
+                return false;
+            }
+        } else {
+            // Check if number
+            let number = parseInt(char);
+            if (isNaN(number)) {
+                return generateError('invalid_character', creditCardNumber);
+            } else {
+                creditCardNumbers.push(number);
+            }
+        }
+    }
+
+    // Step 1: Must be 16 digits
+    if (creditCardNumbers.length != 16) {
+        return generateError('wrong_length', creditCardNumber);
+    }
+    
+    // Step 2: Must have at least 2 digits
+    let isAtleast2Digits = false;
+    for (let index = 1; index < creditCardNumbers.length; index++) {
+        if (creditCardNumbers[index - 1] != creditCardNumbers[index]) {
+            isAtleast2Digits = true;
+        }
+    }
+
+    if (!isAtleast2Digits) {
+        return generateError('only_1_distinct_digit', creditCardNumber);
+    }
+
+    // Step 3: Last number is even
+    if (creditCardNumbers[creditCardNumbers.length - 1] % 2 == 1) {
+        return generateError('final_digit_not_even', creditCardNumber);
+    }
+
+    // Step 4: Sum must be greater than 16
+    let sum = creditCardNumbers.reduce((a, b) => {
+        return a + b;
+    })
+
+    if (sum <= 16) {
+        return generateError('sum_less_than_16', creditCardNumber);
+    }
+
+    return {
+        valid: true,
+        number: creditCardNumber
+    };
+}
+
+function generateError(message, creditCardNumber) {
+    return {
+        valid: false,
+        number: creditCardNumber,
+        error: message
+    };
+}
+
+
+</script>
+</body>
+</html>
